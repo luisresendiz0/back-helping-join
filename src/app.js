@@ -18,7 +18,7 @@ app.set("port", process.env.PORT || 4000);
 
 // App routes
 app.use("/api/auth", authRouter);
-app.use("/api/eventos", requireToken, eventosRouter);
+app.use("/api/eventos", eventosRouter); // TODO: Requires token authentication
 app.use("/api/beneficiado", requireToken, beneficiadoRouter);
 
 export default app;
