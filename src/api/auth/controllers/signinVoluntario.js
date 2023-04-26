@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import useConnection from "../../../database";
 
-const signinBeneficiado = async (req, res, next) => {
+const signinVoluntario = async (req, res, next) => {
   const response = {
     success: false,
     message: "",
@@ -19,7 +19,7 @@ const signinBeneficiado = async (req, res, next) => {
   try {
     const connection = await useConnection();
 
-    const select = `SELECT * FROM beneficiado WHERE email = '${email}';`;
+    const select = `SELECT * FROM voluntario WHERE email = '${email}';`;
     const result = await connection.query(select);
 
     if (result[0].length > 0) {
@@ -59,4 +59,4 @@ const signinBeneficiado = async (req, res, next) => {
   }
 };
 
-export default signinBeneficiado;
+export default signinVoluntario;
