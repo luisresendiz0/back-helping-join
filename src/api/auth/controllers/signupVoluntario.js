@@ -112,8 +112,6 @@ const signupVoluntario = async (req, res) => {
       let total = 1;
       for(let j = 0; j < cats.length; j++) {
         total *= normalizaciones[i].matriz[cats[j]][j];
-        //pos=0  [0,0,0,1,0]
-        //pos=1  [1,1,1,0,1]
       }
 
       total *= aprioriProbability;

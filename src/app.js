@@ -6,12 +6,14 @@ import authRouter from "./api/auth/auth.router";
 import eventosRouter from "./api/eventos/eventos.router";
 import beneficiadoRouter from "./api/beneficiado/beneficiado.router";
 import recomendationsRouter from "./api/recomendations/recomendations.router";
+import cors from "cors";
 
 const app = express();
 
 // App config
 dotenv.config();
 app.use(json());
+app.use(cors());
 app.use(morgan("dev"));
 
 // App vars

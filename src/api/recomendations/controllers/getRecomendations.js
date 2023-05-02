@@ -28,7 +28,13 @@ const getRecomendations = async (req, res) => {
     ids = ids.slice(0, -1);
     ids += ")";
 
-    const queryRecomendaciones = `SELECT * FROM evento WHERE id_evento IN ${ids};`;
+    const queryRecomendaciones = `
+    SELECT e.*, GROUP_CONCAT(c.id_categoria, ':', c.nombre SEPARATOR ', ') AS categorias
+    FROM evento e
+    INNER JOIN evento_categoria ec ON e.id_evento = ec.id_evento
+    INNER JOIN categoria c ON ec.id_categoria = c.id_categoria
+    WHERE e.id_evento IN ${ids}
+    GROUP BY e.nombre, ec.id_evento;`
 
     const resultRecomendaciones = await connection.query(queryRecomendaciones);
 
@@ -36,9 +42,20 @@ const getRecomendations = async (req, res) => {
 
     const sortedEventos = recomendations.map(r => unsortedEventos.find(e => e.id_evento === r.id_evento));
 
+    // TODO: Borrar
+    const queryVolCats = `
+    SELECT GROUP_CONCAT(c.id_categoria, ':', c.nombre SEPARATOR ', ') AS categorias
+    FROM voluntario v
+    INNER JOIN voluntario_categoria vc ON v.id_voluntario = vc.id_voluntario
+    INNER JOIN categoria c ON vc.id_categoria = c.id_categoria
+    WHERE v.id_voluntario = ${voluntarioId};`
+
+    const volCats = await connection.query(queryVolCats);
+
     response.success = true;
     response.message = "Recomendaciones generadas";
     response.data = sortedEventos;
+    response.cats = volCats[0][0].categorias; // TODO: Borrar
     res.status(200).json(response);
 
   } catch (error) {

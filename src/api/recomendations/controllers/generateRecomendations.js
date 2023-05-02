@@ -39,29 +39,28 @@ const generateRecomendations = async (req, res) => {
 
     for(let i = 0; i < normalizaciones.length; i++) {
       normalizaciones[i].matriz = JSON.parse(normalizaciones[i].matriz)
-      let total = aprioriProbability;
+      let total = 1;
       for(let j = 0; j < cats.length; j++) {
-        total *= normalizaciones[i].matriz[cats[j] ? 0 : 1][j];
+        total *= normalizaciones[i].matriz[cats[j]][j];
       }
 
+      total *= aprioriProbability;
       normalizaciones[i].total = total;
     }
 
     normalizaciones = normalizaciones.map(({ total, id_evento }) => ({ total: total *= 10000, id_evento })).sort((a, b) => {
       return b.total - a.total;
-    })
-
-    console.log(normalizaciones);
-
-    normalizaciones = normalizaciones.slice(0, 10);
+    }).slice(0, 10);
 
     const insertNormalizacion = `
-    INSERT INTO recomendacion (id_voluntario, recomendacion) VALUES(${voluntarioId}, '${JSON.stringify(normalizaciones)}');`
+    UPDATE recomendacion
+    SET recomendacion = '${JSON.stringify(normalizaciones)}'
+    WHERE id_voluntario = '${voluntarioId}';`
 
     const resultNormalizacion = await connection.query(insertNormalizacion);
 
     if(resultNormalizacion[0].affectedRows !== 1) {
-      throw new Error("No se pudo insertar la normalizacion");
+      throw new Error("No se pudo actualizar la normalizacion");
     }
 
     response.success = true;
