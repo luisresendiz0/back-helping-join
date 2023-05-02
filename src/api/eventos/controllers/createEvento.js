@@ -110,7 +110,7 @@ export const createEvento = async (req, res) => {
         array2[categoria - 1] = 0;
       });
 
-      let matriz = [array1, array2];
+      let matriz = [array2, array1];
       
       matriz = matriz.map(row => row.map(col => (col + 1)/3));
 
