@@ -7,6 +7,7 @@ import eventosRouter from "./api/eventos/eventos.router";
 import beneficiadoRouter from "./api/beneficiado/beneficiado.router";
 import recomendationsRouter from "./api/recomendations/recomendations.router";
 import cors from "cors";
+import reportesRouter from "./api/reportes/reportes.router";
 
 const app = express();
 
@@ -24,5 +25,6 @@ app.use("/api/auth", authRouter);
 app.use("/api/eventos", eventosRouter); // TODO: Requires token authentication
 app.use("/api/beneficiado", requireToken, beneficiadoRouter);
 app.use("/api/recomendations", recomendationsRouter); // TODO: Requires token authentication
+app.use("/api/reportes", reportesRouter) // TODO: Requires token authentication
 
 export default app;

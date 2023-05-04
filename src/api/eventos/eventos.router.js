@@ -5,6 +5,7 @@ const router = Router();
 
 router.get("/", controller.getAllEventos);
 router.post("/create", controller.createEvento);
-router.get("/:id", controller.getEventoById);
+router.get("/detail", controller.getEventoById);
+router.post("/update-interest", controller.updateEventoInterest);
 
 export default router;

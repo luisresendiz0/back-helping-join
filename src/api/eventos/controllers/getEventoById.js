@@ -7,16 +7,22 @@ export const getEventoById = async (req, res) => {
     data: null
   }
   try {
-    
-    const { id } = req.params;
+    const { voluntarioId, eventoId } = req.query;
 
-    if(!id) {
-      throw new Error("No se recibió el id del evento");
+    if(!eventoId || !voluntarioId) {
+      throw new Error("No se recibieron los datos necesarios");
     }
 
     const connection = await useConnection();
 
-    const query = `SELECT * FROM evento WHERE id_evento = ${id};`;
+    const query = `
+    SELECT 
+      *, 
+      (select count(*) from evento_voluntario where id_evento = ${eventoId}) as interesados,
+      (select id_ev from evento_voluntario where id_evento = ${eventoId} and id_voluntario = ${voluntarioId}) as interesado,
+      (select id_reporte from reporte where id_evento = ${eventoId} and id_voluntario = ${voluntarioId}) as reportado
+    FROM evento 
+    WHERE id_evento = ${eventoId};`;
 
     const result = await connection.query(query);
 
