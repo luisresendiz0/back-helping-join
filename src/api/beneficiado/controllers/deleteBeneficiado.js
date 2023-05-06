@@ -9,7 +9,7 @@ export const deleteBeneficiado = async (req, res) => {
   }
 
   try {
-    const { beneficiadoId } = req.body;
+    const { beneficiadoId } = req.params;
 
     if(!beneficiadoId) {
       throw new Error("No se recibió el id del beneficiado");
@@ -17,55 +17,51 @@ export const deleteBeneficiado = async (req, res) => {
 
     const connection = await useConnection();
 
-    const deleteeventocatsquery = `
-    delete ec from evento_categoria ec
-    inner join evento e on ec.id_evento = e.id_evento
-    where e.id_beneficiado = ${beneficiadoId};`;
+    // const deleteeventocatsquery = `
+    // delete ec from evento_categoria ec
+    // inner join evento e on ec.id_evento = e.id_evento
+    // where e.id_beneficiado = ${beneficiadoId};`;
 
-    const deleteeventocatsresult = await connection.query(deleteeventocatsquery);
+    // const deleteeventocatsresult = await connection.query(deleteeventocatsquery);
 
-    if(deleteeventocatsresult[0].affectedRows === 0) {
-      throw new Error("deleteeventocatsquery: No se pudo eleminar el beneficiado");
-    }
+    // if(deleteeventocatsresult[0].affectedRows === 0) {
+    //   throw new Error("deleteeventocatsquery: No se pudo eleminar el beneficiado");
+    // }
 
-    const deleteEventoVoluntarioQuery = `
-    delete ev from evento_voluntario ev
-    inner join evento e on ev.id_evento = e.id_evento
-    where e.id_beneficiado = ${beneficiadoId};`;
+    // const deleteEventoVoluntarioQuery = `
+    // delete ev from evento_voluntario ev
+    // inner join evento e on ev.id_evento = e.id_evento
+    // where e.id_beneficiado = ${beneficiadoId};`;
 
-    await connection.query(deleteEventoVoluntarioQuery);
+    // await connection.query(deleteEventoVoluntarioQuery);
 
-    const deleteNormalizacionQuery = `
-    delete n from normalizacion n
-    inner join evento e on n.id_evento = e.id_evento
-    where e.id_beneficiado = ${beneficiadoId};`;
+    // const deleteNormalizacionQuery = `
+    // delete n from normalizacion n
+    // inner join evento e on n.id_evento = e.id_evento
+    // where e.id_beneficiado = ${beneficiadoId};`;
 
-    const deleteNormalizacionResult = await connection.query(deleteNormalizacionQuery);
+    // const deleteNormalizacionResult = await connection.query(deleteNormalizacionQuery);
 
-    if(deleteNormalizacionResult[0].affectedRows === 0) {
-      throw new Error("deleteNormalizacionQuery: No se pudo eleminar el beneficiado");
-    }
+    // if(deleteNormalizacionResult[0].affectedRows === 0) {
+    //   throw new Error("deleteNormalizacionQuery: No se pudo eleminar el beneficiado");
+    // }
 
-    const deleteReportesQuery = `
-    delete r from reporte r
-    inner join evento e on r.id_evento = e.id_evento
-    where e.id_beneficiado = ${beneficiadoId};`;
+    // const deleteReportesQuery = `
+    // delete r from reporte r
+    // inner join evento e on r.id_evento = e.id_evento
+    // where e.id_beneficiado = ${beneficiadoId};`;
 
-    const deleteReportesResult = await connection.query(deleteReportesQuery);
+    // await connection.query(deleteReportesQuery);
 
-    if(deleteReportesResult[0].affectedRows === 0) {
-      throw new Error("deleteReportesQuery: No se pudo eleminar el beneficiado");
-    }
+    // const deleteEventosQuery = `
+    // delete e from evento e
+    // where e.id_beneficiado = ${beneficiadoId};`;
 
-    const deleteEventosQuery = `
-    delete e from evento e
-    where e.id_beneficiado = ${beneficiadoId};`;
+    // const deleteEventosResult = await connection.query(deleteEventosQuery);
 
-    const deleteEventosResult = await connection.query(deleteEventosQuery);
-
-    if(deleteEventosResult[0].affectedRows === 0) {
-      throw new Error("deleteEventosQuery: No se pudo eleminar el beneficiado");
-    }
+    // if(deleteEventosResult[0].affectedRows === 0) {
+    //   throw new Error("deleteEventosQuery: No se pudo eleminar el beneficiado");
+    // }
 
     const deleteBeneficiadoCatsQuery = `
     delete bc from beneficiado_categoria bc
@@ -100,3 +96,5 @@ export const deleteBeneficiado = async (req, res) => {
     return res.status(500).json(result);
   }
 }
+
+export default deleteBeneficiado;
