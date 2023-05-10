@@ -86,7 +86,8 @@ export const deleteEvento = async (req, res) => {
       throw new Error("deletequery: No se han modificado eventos");
     }
 
-    response.success = true;
+    await connection.end();
+response.success = true;
     response.message = "Evento eliminado";
     response.data = deleteresult[0];
     return res.status(200).json(response);

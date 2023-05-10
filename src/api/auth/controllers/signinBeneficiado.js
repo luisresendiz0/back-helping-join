@@ -37,7 +37,8 @@ const signinBeneficiado = async (req, res, next) => {
 
         usuario.contrasena = null;
 
-        response.success = true;
+        await connection.end();
+response.success = true;
         response.message = "Usuario autenticado correctamente";
         response.data = {
           token,

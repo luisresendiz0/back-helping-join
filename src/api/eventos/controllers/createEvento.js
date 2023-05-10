@@ -130,6 +130,7 @@ export const createEvento = async (req, res) => {
         throw new Error("No se pudo crear las normalizaciones");
       }
 
+      await connection.end();
       response.success = true;
       response.message = "Evento creado";
       response.data = eventoId;

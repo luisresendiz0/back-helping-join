@@ -69,7 +69,8 @@ export const search = async (req, res) => {
 
     const [searchResult] = await connection.query(searchQuery);
 
-    response.success = true;
+    await connection.end();
+response.success = true;
     response.message = "Busqueda exitosa";
     response.data = searchResult;
     return res.status(200).json(response);

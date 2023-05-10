@@ -38,7 +38,8 @@ export const createReporte = async (req, res) => {
       throw new Error("No se pudo crear el reporte");
     }
 
-    response.success = true;
+    await connection.end();
+response.success = true;
     response.message = "Reporte creado";
     response.data = null;
     return res.status(200).json(response);

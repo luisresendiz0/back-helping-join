@@ -42,20 +42,10 @@ const getRecomendations = async (req, res) => {
 
     const sortedEventos = recomendations.map(r => unsortedEventos.find(e => e.id_evento === r.id_evento));
 
-    // TODO: Borrar
-    const queryVolCats = `
-    SELECT GROUP_CONCAT(c.id_categoria, ':', c.nombre SEPARATOR ', ') AS categorias
-    FROM voluntario v
-    INNER JOIN voluntario_categoria vc ON v.id_voluntario = vc.id_voluntario
-    INNER JOIN categoria c ON vc.id_categoria = c.id_categoria
-    WHERE v.id_voluntario = ${voluntarioId};`
-
-    const volCats = await connection.query(queryVolCats);
-
-    response.success = true;
+    await connection.end();
+response.success = true;
     response.message = "Recomendaciones generadas";
     response.data = sortedEventos;
-    response.cats = volCats[0][0].categorias; // TODO: Borrar
     res.status(200).json(response);
 
   } catch (error) {

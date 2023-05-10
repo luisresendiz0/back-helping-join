@@ -30,7 +30,8 @@ export const getEventoById = async (req, res) => {
       throw new Error("No se encontró el evento");
     }
 
-    response.success = true;
+    await connection.end();
+response.success = true;
     response.message = "Evento obtenido";
     response.data = result[0][0];
 

@@ -135,9 +135,18 @@ const signupVoluntario = async (req, res) => {
       expiresIn: "7d",
     });
 
+    const getUser = `SELECT * FROM voluntario WHERE email = '${email}';`;
+    const [user] = await connection.query(getUser);
+
+    if (user.length !== 1) {
+      response.message = "Error al registrar el usuario";
+      return res.status(500).json(response);
+    }
+
+    await connection.end();
     response.success = true;
     response.message = "Usuario registrado";
-    response.data = { token, voluntarioId: usuario[0].insertId };
+    response.data = { token, voluntario: user[0] };
     return res.status(201).json(response);
   } catch (error) {
     console.log(error);

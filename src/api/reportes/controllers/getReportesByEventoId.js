@@ -17,7 +17,8 @@ export const getReportesByEventoId = async (req, res) => {
     const query = `
     select 
       r.*,
-      v.nombre as voluntario_nombre
+      v.nombre as voluntario_nombre,
+      v.imagen as voluntario_imagen
     from reporte r 
     inner join voluntario v on r.id_voluntario = v.id_voluntario 
     where id_evento = ${eventoId} and estatus = 'pendiente';`;
@@ -30,7 +31,8 @@ export const getReportesByEventoId = async (req, res) => {
       throw new Error("No hay reportes");
     }
 
-    response.success = true;
+    await connection.end();
+response.success = true;
     response.message = "Reportes obtenidos";
     response.data = result[0];
     return res.status(200).json(response);

@@ -27,7 +27,8 @@ export const updateReporteStatus = async (req, res) => {
       throw new Error("No se han modificado reportes");
     }
 
-    response.success = true;
+    await connection.end();
+response.success = true;
     response.message = "Reportes modificados";
     response.data = result[0];
     return res.status(200).json(response);

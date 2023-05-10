@@ -36,7 +36,8 @@ export const updateEventoInterest = async (req, res) => {
       throw new Error("No se pudo agregar el voluntario al evento");
     }
 
-    response.success = true;
+    await connection.end();
+response.success = true;
     response.message = "Voluntario agregado al evento";
     response.data = null;
 

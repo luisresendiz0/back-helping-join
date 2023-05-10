@@ -63,7 +63,8 @@ const generateRecomendations = async (req, res) => {
       throw new Error("No se pudo actualizar la normalizacion");
     }
 
-    response.success = true;
+    await connection.end();
+response.success = true;
     response.message = "Recomendaciones generadas";
     response.data = null;
     res.status(200).json(response);

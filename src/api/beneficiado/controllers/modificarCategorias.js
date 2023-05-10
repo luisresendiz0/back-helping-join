@@ -36,7 +36,8 @@ const modificarCategorias = async (req, res) => {
 
     await Promise.all(promises);
 
-    response.success = true;
+    await connection.end();
+response.success = true;
     response.message = "Categorias modificadas correctamente";
     return res.status(200).json(response);
   } catch (error) {

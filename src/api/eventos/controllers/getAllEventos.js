@@ -17,7 +17,8 @@ export const getAllEventos = async (req, res) => {
     const results = await connection.query(query);
 
     if (results[0]) {
-      response.success = true;
+      await connection.end();
+response.success = true;
       response.message = "Eventos obtenidos con éxito";
       response.data = results[0];
 

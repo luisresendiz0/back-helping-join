@@ -15,22 +15,34 @@ const signupBeneficiado = async (req, res) => {
     nombre,
     imagen,
     tipo,
-    direccion,
+    calle,
+    numero_exterior,
+    numero_interior,
+    colonia,
+    alcaldia,
+    codigo_postal,
+    entidad,
     telefono,
     descripcion,
     responsable,
+    categorias,
   } = req.body;
 
   if (
     !email ||
     !contrasena ||
     !nombre ||
-    !imagen ||
     !tipo ||
-    !direccion ||
+    !calle ||
+    !numero_exterior ||
+    !colonia ||
+    !alcaldia ||
+    !codigo_postal ||
+    !entidad ||
     !telefono ||
-    !descripcion ||
-    !responsable
+    // !descripcion ||
+    !responsable ||
+    !categorias
   ) {
     response.message = "Falta información";
     return res.status(400).json(response);
@@ -49,7 +61,42 @@ const signupBeneficiado = async (req, res) => {
 
     const encryptedPassword = await bcrypt.hash(contrasena, 10);
 
-    const insert = `INSERT INTO beneficiado (email, contrasena, nombre, imagen, tipo, direccion, telefono, descripcion, responsable, evento_eliminados) VALUES ('${email}', '${encryptedPassword}', '${nombre}', '${imagen}', '${tipo}', '${direccion}', '${telefono}', '${descripcion}', '${responsable}', '0');`;
+    // INSERT INTO db_helping_join.beneficiado (nombre, imagen, tipo, calle, numero_exterior, numero_interior, colonia, alcaldia, codigo_postal, entidad, telefono, descripcion, responsable, email, contrasena, evento_eliminados) VALUES('', NULL, '', '', '', NULL, '', '', '', '', '', '', '', '', '', 0);
+    const insert = `INSERT INTO beneficiado (
+      nombre, 
+      imagen, 
+      tipo, 
+      calle, 
+      numero_exterior, 
+      numero_interior, 
+      colonia, 
+      alcaldia, 
+      codigo_postal, 
+      entidad, 
+      telefono, 
+      descripcion, 
+      responsable, 
+      email, 
+      contrasena, 
+      evento_eliminados
+    ) VALUES(
+      '${nombre}', 
+      '${imagen}', 
+      '${tipo}', 
+      '${calle}', 
+      '${numero_exterior}', 
+      '${numero_interior}', 
+      '${colonia}', 
+      '${alcaldia}', 
+      '${codigo_postal}', 
+      '${entidad}', 
+      '${telefono}', 
+      '${descripcion}', 
+      '${responsable}', 
+      '${email}', 
+      '${encryptedPassword}', 
+      0);`;
+
     const usuario = await connection.query(insert);
 
     if (usuario[0].affectedRows === 0) {
@@ -61,9 +108,33 @@ const signupBeneficiado = async (req, res) => {
       expiresIn: "7d",
     });
 
+    let queryCategorias = `INSERT INTO beneficiado_categoria (id_beneficiado, id_categoria) VALUES `;
+
+    categorias.forEach(categoria => {
+      queryCategorias += `(${usuario[0].insertId}, ${categoria}), `;
+    })
+
+    queryCategorias = queryCategorias.slice(0, -2);
+    queryCategorias += `;`;
+
+    const resultCateagorias = await connection.query(queryCategorias);
+
+    if (resultCateagorias[0].affectedRows !== categorias.length) {
+      throw new Error("Error al registrar las categorias");
+    }
+
+    const getUser = `SELECT * FROM beneficiado WHERE id_beneficiado = ${usuario[0].insertId};`;
+
+    const [rows] = await connection.query(getUser);
+
+    if (rows.length === 0) {
+      throw new Error("No se encontró el usuario");
+    }
+
+    await connection.end();
     response.success = true;
     response.message = "Usuario registrado";
-    response.data = { token };
+    response.data = { token, beneficiado: rows[0] };
     return res.status(201).json(response);
   } catch (error) {
     console.log(error);
