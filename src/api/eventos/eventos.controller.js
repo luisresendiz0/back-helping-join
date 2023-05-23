@@ -5,6 +5,7 @@ import { updateEventoInterest } from "./controllers/updateEventoInterest";
 import { deleteEvento } from "./controllers/deleteEvento";
 import { getEventosInteres } from "./controllers/getEventosInteres";
 import { getPastEventosInteres } from "./controllers/getPastEventosInteres";
+import { getEventosByBeneficiadoId } from "./controllers/getEventosByBeneficiadoId";
 
 const controller = {
 	getAllEventos,
@@ -13,7 +14,8 @@ const controller = {
 	updateEventoInterest,
 	deleteEvento,
 	getEventosInteres,
-	getPastEventosInteres
+	getPastEventosInteres,
+	getEventosByBeneficiadoId
 }
 
 export default controller;

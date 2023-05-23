@@ -22,6 +22,8 @@ export const createEvento = async (req, res) => {
     imagen,
     categorias } = req.body;
 
+    console.log(req.body);
+
   if(
     !id_beneficiado ||
     !nombre || 

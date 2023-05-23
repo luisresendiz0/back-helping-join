@@ -22,11 +22,7 @@ export const deleteBeneficiado = async (req, res) => {
     inner join evento e on ec.id_evento = e.id_evento
     where e.id_beneficiado = ${beneficiadoId};`;
 
-    const deleteeventocatsresult = await connection.query(deleteeventocatsquery);
-
-    if(deleteeventocatsresult[0].affectedRows === 0) {
-      throw new Error("deleteeventocatsquery: No se pudo eleminar el beneficiado");
-    }
+    await connection.query(deleteeventocatsquery);
 
     const deleteEventoVoluntarioQuery = `
     delete ev from evento_voluntario ev
@@ -40,11 +36,7 @@ export const deleteBeneficiado = async (req, res) => {
     inner join evento e on n.id_evento = e.id_evento
     where e.id_beneficiado = ${beneficiadoId};`;
 
-    const deleteNormalizacionResult = await connection.query(deleteNormalizacionQuery);
-
-    if(deleteNormalizacionResult[0].affectedRows === 0) {
-      throw new Error("deleteNormalizacionQuery: No se pudo eleminar el beneficiado");
-    }
+    await connection.query(deleteNormalizacionQuery);
 
     const deleteReportesQuery = `
     delete r from reporte r
@@ -57,11 +49,7 @@ export const deleteBeneficiado = async (req, res) => {
     delete e from evento e
     where e.id_beneficiado = ${beneficiadoId};`;
 
-    const deleteEventosResult = await connection.query(deleteEventosQuery);
-
-    if(deleteEventosResult[0].affectedRows === 0) {
-      throw new Error("deleteEventosQuery: No se pudo eleminar el beneficiado");
-    }
+    await connection.query(deleteEventosQuery);
 
     const deleteBeneficiadoCatsQuery = `
     delete bc from beneficiado_categoria bc
