@@ -1,5 +1,7 @@
 import useConnection from "../../../database";
-
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 export const search = async (req, res) => {
   const response = {
     success: false,
@@ -19,35 +21,45 @@ export const search = async (req, res) => {
 
   try {
     // if(!text) throw new Error('No se ha enviado texto a buscar');
-    if(!type) throw new Error('No se ha enviado tipo de busqueda');
-    if(!categoryId) throw new Error('No se ha enviado categoria de busqueda');
-    if(!fecha_inicio) throw new Error('No se ha enviado fecha de inicio de busqueda');
-    if(!fecha_fin) throw new Error('No se ha enviado fecha de fin de busqueda');
-    if(!entidad) throw new Error('No se ha enviado entidad de busqueda');
-    if(!alcaldia) throw new Error('No se ha enviado alcaldia de busqueda');
+    if (!text) throw new Error("No se ha enviado tipo de busqueda");
 
-    let searchQuery = '';
+    let searchQuery = "";
 
-    if(type === 'evento') {
+    if (type === "evento") {
       // buscar eventos
 
       // SELECT id_evento, id_beneficiado, nombre, descripcion, fecha_inicio, fecha_fin, calle, numero_exterior, numero_interior, colonia, alcaldia, codigo_postal, entidad, imagen FROM db_helping_join.evento;
       searchQuery = `
-      SELECT e.*
+      SELECT e.*, GROUP_CONCAT(c.id_categoria, ':', c.nombre SEPARATOR ', ') AS categorias
       FROM evento e
       INNER JOIN evento_categoria ec ON e.id_evento = ec.id_evento
+      INNER JOIN categoria c ON ec.id_categoria = c.id_categoria
       WHERE 
-        ${text ? `(nombre LIKE '%${text}%'OR descripcion LIKE '%${text}%') OR` : ''}
-        (fecha_inicio >= '${fecha_inicio}'
-        OR fecha_fin <= '${fecha_fin}'
-        OR entidad LIKE '%${entidad}%'
-        OR alcaldia LIKE '%${alcaldia}%'
-        OR ec.id_categoria = ${categoryId})
+        ${
+          text
+            ? `(e.nombre LIKE '%${text}%'OR e.descripcion LIKE '%${text}%')`
+            : ""
+        }
+ 
       GROUP BY e.id_evento
       `;
+
+      //   const queryRecomendaciones = `
+      // SELECT e.*, GROUP_CONCAT(c.id_categoria, ':', c.nombre SEPARATOR ', ') AS categorias
+      // FROM evento e
+      // INNER JOIN evento_categoria ec ON e.id_evento = ec.id_evento
+      // INNER JOIN categoria c ON ec.id_categoria = c.id_categoria
+      // WHERE e.id_evento IN ${ids}
+      // GROUP BY e.nombre, ec.id_evento;`
     }
 
-    if(type === 'organizacion' || type === 'civil') {
+    // (fecha_inicio >= '${fecha_inicio}'
+    // OR fecha_fin <= '${fecha_fin}'
+    // OR entidad LIKE '%${entidad}%'
+    // OR alcaldia LIKE '%${alcaldia}%'
+    // OR ec.id_categoria = ${categoryId})
+
+    if (type === "organizacion" || type === "civil") {
       // buscar organizaciones o civiles
 
       // SELECT id_beneficiado, nombre, imagen, tipo, calle, numero_exterior, numero_interior, colonia, alcaldia, codigo_postal, entidad, telefono, descripcion, responsable, email, contrasena, evento_eliminados FROM db_helping_join.beneficiado;
@@ -56,21 +68,27 @@ export const search = async (req, res) => {
       FROM beneficiado b
       INNER JOIN beneficiado_categoria bc ON b.id_beneficiado = bc.id_beneficiado
       WHERE 
-        ${text ? `(nombre LIKE '%${text}%' OR descripcion LIKE '%${text}%' OR responsable LIKE '%${text}%') OR` : ''}
-        (tipo = '${type}'
-        OR entidad LIKE '%${entidad}%'
-        OR alcaldia LIKE '%${alcaldia}%'
-        OR bc.id_categoria = ${categoryId})
+        ${
+          text
+            ? `(nombre LIKE '%${text}%' OR descripcion LIKE '%${text}%' OR responsable LIKE '%${text}%')`
+            : ""
+        }
+        
       GROUP BY b.id_beneficiado
       `;
     }
+
+    // (tipo = '${type}'
+    //     OR entidad LIKE '%${entidad}%'
+    //     OR alcaldia LIKE '%${alcaldia}%'
+    //     OR bc.id_categoria = ${categoryId})
 
     const connection = await useConnection();
 
     const [searchResult] = await connection.query(searchQuery);
 
     await connection.end();
-response.success = true;
+    response.success = true;
     response.message = "Busqueda exitosa";
     response.data = searchResult;
     return res.status(200).json(response);
@@ -81,4 +99,4 @@ response.success = true;
     response.data = [];
     return res.status(500).json(response);
   }
-}
+};

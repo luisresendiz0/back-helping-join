@@ -10,6 +10,7 @@ import cors from "cors";
 import reportesRouter from "./api/reportes/reportes.router";
 import searchRouter from "./api/search/search.router";
 import categoriasRouter from "./api/categorias/categorias.router";
+import vountarioRouer from "./api/voluntario/voluntario.router";
 
 const app = express();
 
@@ -30,5 +31,6 @@ app.use("/api/recomendations", recomendationsRouter); // TODO: Requires token au
 app.use("/api/reportes", reportesRouter) // TODO: Requires token authentication
 app.use("/api/search", searchRouter); //TODO: Requires token authentication
 app.use("/api/categorias", categoriasRouter); // TODO: Requires token authentication
+app.use("/api/voluntario", vountarioRouer); // TODO: Requires token authentication
 
 export default app;

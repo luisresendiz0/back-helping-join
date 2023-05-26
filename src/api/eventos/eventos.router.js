@@ -11,5 +11,6 @@ router.delete("/delete", controller.deleteEvento);
 router.get("/interes", controller.getEventosInteres);
 router.get("/interes-pasados", controller.getPastEventosInteres);
 router.get("/beneficiado/:beneficiadoId", controller.getEventosByBeneficiadoId);
+router.put("/update", controller.updateEvento);
 
 export default router;
