@@ -3,7 +3,7 @@ import useConnection from "./database";
 
 const main = async () => {
   try {
-    await app.listen(app.get("port"), () => {
+    await app.listen(app.get("port"), "0.0.0.0", () => {
       console.log(`Server on port ${app.get("port")}`);
     });
 
