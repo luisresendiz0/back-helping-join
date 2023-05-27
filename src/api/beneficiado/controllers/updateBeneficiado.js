@@ -3,9 +3,9 @@ import useConnection from "../../../database";
 const updateBeneficiado = async (req, res) => {
   const response = {
     success: false,
-    message: '',
-    data: null
-  }
+    message: "",
+    data: null,
+  };
 
   try {
     const {
@@ -22,10 +22,13 @@ const updateBeneficiado = async (req, res) => {
       entidad,
       telefono,
       descripcion,
+      facebook,
+      instagram,
+      twitter,
     } = req.body;
 
     const connection = await useConnection();
-    console.log("imagen", imagen, typeof imagen)
+    console.log("imagen", imagen, typeof imagen);
     let update = `
     UPDATE beneficiado 
     SET 
@@ -39,9 +42,21 @@ const updateBeneficiado = async (req, res) => {
       telefono = '${telefono}', 
       descripcion = '${descripcion}',
       nombre = '${nombre}',
-      email = '${email}'`;
+      email = '${email}',
+      facebook = '${facebook}',
+      instagram = '${instagram}',
+      twitter = '${twitter}'`;
 
-    if (imagen && imagen !== 'null' && imagen !== 'undefined' && imagen !== 'false' && imagen !== 'true' && imagen !== {} && imagen !== [] && typeof imagen !== 'object') {
+    if (
+      imagen &&
+      imagen !== "null" &&
+      imagen !== "undefined" &&
+      imagen !== "false" &&
+      imagen !== "true" &&
+      imagen !== {} &&
+      imagen !== [] &&
+      typeof imagen !== "object"
+    ) {
       update += `, imagen = '${imagen}'`;
     }
 
@@ -52,7 +67,7 @@ const updateBeneficiado = async (req, res) => {
     const result = await connection.query(update);
 
     if (result[0].affectedRows !== 1) {
-      response.message = 'No se pudo actualizar el beneficiado';
+      response.message = "No se pudo actualizar el beneficiado";
       return res.status(400).json(response);
     }
 
@@ -61,15 +76,14 @@ const updateBeneficiado = async (req, res) => {
     const data = await connection.query(select);
 
     response.success = true;
-    response.message = 'Beneficiado actualizado';
+    response.message = "Beneficiado actualizado";
     response.data = data[0][0];
     res.status(200).json(response);
-
   } catch (error) {
     console.log(error);
-    response.message = 'No se pudo actualizar el beneficiado';
+    response.message = "No se pudo actualizar el beneficiado";
     res.status(400).json(response);
   }
-}
+};
 
 export default updateBeneficiado;
