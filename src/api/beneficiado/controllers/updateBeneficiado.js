@@ -1,4 +1,5 @@
 import useConnection from "../../../database";
+import { sendEmail } from "../../../services/emails";
 
 const updateBeneficiado = async (req, res) => {
   const response = {
@@ -25,10 +26,31 @@ const updateBeneficiado = async (req, res) => {
       facebook,
       instagram,
       twitter,
+      web,
     } = req.body;
 
     const connection = await useConnection();
-    console.log("imagen", imagen, typeof imagen);
+
+    let find = `SELECT * FROM beneficiado WHERE id_beneficiado = '${beneficiadoId}';`;
+
+    const findResult = await connection.query(find);
+
+    if (findResult[0].length === 0) {
+      throw new Error("No existe beneficiado");
+    }
+
+    let verificado = "verificado = 1";
+
+    if (findResult[0][0].email !== email) {
+      verificado = "verificado = 0";
+      await sendEmail(
+        email,
+        nombre,
+        findResult[0][0].id_beneficiado,
+        "beneficiado"
+      );
+    }
+
     let update = `
     UPDATE beneficiado 
     SET 
@@ -45,7 +67,10 @@ const updateBeneficiado = async (req, res) => {
       email = '${email}',
       facebook = '${facebook}',
       instagram = '${instagram}',
-      twitter = '${twitter}'`;
+      twitter = '${twitter}',
+      web = '${web}'`;
+
+    update += `, ${verificado}`;
 
     if (
       imagen &&

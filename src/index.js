@@ -8,7 +8,7 @@ const main = async () => {
     });
 
     const connection = await useConnection();
-    await connection.query("select * from beneficiado;");
+    await connection.query("select 1 + 1;");
     console.log("Database is connected");
   } catch (error) {
     console.error("Error: ", error);

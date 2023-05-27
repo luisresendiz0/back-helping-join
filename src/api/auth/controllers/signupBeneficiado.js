@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import useConnection from "../../../database";
+import { sendEmail } from "../../../services/emails";
 
 const signupBeneficiado = async (req, res) => {
   const response = {
@@ -110,9 +111,9 @@ const signupBeneficiado = async (req, res) => {
 
     let queryCategorias = `INSERT INTO beneficiado_categoria (id_beneficiado, id_categoria) VALUES `;
 
-    categorias.forEach(categoria => {
+    categorias.forEach((categoria) => {
       queryCategorias += `(${usuario[0].insertId}, ${categoria}), `;
-    })
+    });
 
     queryCategorias = queryCategorias.slice(0, -2);
     queryCategorias += `;`;
@@ -132,6 +133,9 @@ const signupBeneficiado = async (req, res) => {
     }
 
     await connection.end();
+
+    await sendEmail(email, responsable, usuario[0].insertId, "beneficiado");
+
     response.success = true;
     response.message = "Usuario registrado";
     response.data = { token, beneficiado: rows[0] };
