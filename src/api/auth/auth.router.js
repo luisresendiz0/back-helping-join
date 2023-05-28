@@ -11,5 +11,7 @@ router.post("/signin-moderador", controller.signInModerador);
 router.put("/update-moderador-password", controller.updateModeradorPassword);
 router.get("/verify/beneficiado/:id", controller.verifyBeneficiado);
 router.get("/verify/voluntario/:id", controller.verifyVoluntario);
+router.post("/recover-password", controller.recoverPassword);
+router.post("/recover-new-password", controller.recoverNewPassword);
 
 export default router;

@@ -6,6 +6,8 @@ import signInModerador from "./controllers/signInModerador";
 import updateModeradorPassword from "./controllers/updateModeradorPassword";
 import verifyBeneficiado from "./controllers/verifyBeneficiado";
 import verifyVoluntario from "./controllers/verifyVoluntario";
+import recoverPassword from "./controllers/recoverPassword";
+import recoverNewPassword from "./controllers/recoverNewPassword";
 
 const controller = {
   signupBeneficiado,
@@ -16,6 +18,8 @@ const controller = {
   updateModeradorPassword,
   verifyBeneficiado,
   verifyVoluntario,
+  recoverPassword,
+  recoverNewPassword,
 };
 
 export default controller;
