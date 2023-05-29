@@ -42,7 +42,7 @@ const signupBeneficiado = async (req, res) => {
     !entidad ||
     !telefono ||
     // !descripcion ||
-    !responsable ||
+    // !responsable ||
     !categorias
   ) {
     response.message = "Falta información";
