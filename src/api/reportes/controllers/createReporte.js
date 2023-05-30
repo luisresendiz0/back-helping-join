@@ -9,13 +9,12 @@ export const createReporte = async (req, res) => {
 
   const { id_voluntario, id_evento, descripcion } = req.body;
 
-  if(!id_voluntario || !id_evento || !descripcion) {
+  if (!id_voluntario || !id_evento || !descripcion) {
     response.message = "Faltan datos";
     return res.status(400).json(response);
   }
 
   try {
-    
     const query = `INSERT INTO reporte (
       id_voluntario, 
       id_evento, 
@@ -34,12 +33,12 @@ export const createReporte = async (req, res) => {
 
     const result = await connection.query(query);
 
-    if(result[0].affectedRows !== 1) {
+    if (result[0].affectedRows !== 1) {
       throw new Error("No se pudo crear el reporte");
     }
 
     await connection.end();
-response.success = true;
+    response.success = true;
     response.message = "Reporte creado";
     response.data = null;
     return res.status(200).json(response);
@@ -50,4 +49,4 @@ response.success = true;
     response.data = null;
     return res.status(500).json(response);
   }
-}
+};
