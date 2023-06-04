@@ -28,7 +28,7 @@ const getRecomendations = async (req, res) => {
     ids += ")";
 
     const queryRecomendaciones = `
-    SELECT e.*, GROUP_CONCAT(c.id_categoria, ':', c.nombre SEPARATOR ', ') AS categorias
+    SELECT e.*, GROUP_CONCAT(c.nombre SEPARATOR ', ') AS categorias
     FROM evento e
     INNER JOIN evento_categoria ec ON e.id_evento = ec.id_evento
     INNER JOIN categoria c ON ec.id_categoria = c.id_categoria
