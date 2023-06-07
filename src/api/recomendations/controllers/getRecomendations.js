@@ -39,9 +39,10 @@ const getRecomendations = async (req, res) => {
 
     const unsortedEventos = resultRecomendaciones[0];
 
-    const sortedEventos = recomendations.map((r) =>
-      unsortedEventos.find((e) => e.id_evento === r.id_evento)
-    );
+    const sortedEventos = recomendations.map((r) => {
+      const evento = unsortedEventos.find((e) => e.id_evento === r.id_evento)
+      return {...evento, probabilidad: r.total}
+    });
 
     await connection.end();
     response.success = true;

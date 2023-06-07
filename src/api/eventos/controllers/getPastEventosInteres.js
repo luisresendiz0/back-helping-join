@@ -17,10 +17,29 @@ export const getPastEventosInteres = async (req, res) => {
     const connection = await useConnection();
 
     const query = `
-    select e.*
-    from evento e
-    inner join evento_voluntario ev on ev.id_evento = e.id_evento 
-    where ev.id_voluntario = ${id_voluntario} and e.fecha_fin <= now();`
+    SELECT
+      e.id_evento,
+      e.id_beneficiado,
+      e.nombre,
+      e.descripcion,
+      e.fecha_inicio,
+      e.fecha_fin,
+      e.calle,
+      e.numero_exterior,
+      e.numero_interior,
+      e.colonia,
+      e.alcaldia,
+      e.codigo_postal,
+      e.entidad,
+      e.imagen,
+      GROUP_CONCAT(c.nombre SEPARATOR ', ') AS categorias
+    FROM evento e
+    INNER JOIN evento_voluntario ev ON ev.id_evento = e.id_evento
+    INNER JOIN evento_categoria ec ON e.id_evento = ec.id_evento
+    INNER JOIN categoria c ON ec.id_categoria = c.id_categoria
+    WHERE ev.id_voluntario = ${id_voluntario}
+    AND e.fecha_fin < NOW()
+    GROUP BY e.id_evento;`;
 
     const [eventos] = await connection.query(query);
 
