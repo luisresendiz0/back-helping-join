@@ -10,6 +10,7 @@ export const getReportes = async (req, res) => {
   try {
     const query = `
     SELECT
+    e.id_evento AS id_evento,
     e.nombre AS evento_nombre,
     e.id_beneficiado AS id_beneficiado,
     (SELECT evento_eliminados FROM beneficiado WHERE id_beneficiado = e.id_beneficiado) AS eventos_eliminados,
