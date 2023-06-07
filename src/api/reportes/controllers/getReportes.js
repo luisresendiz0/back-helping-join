@@ -9,17 +9,15 @@ export const getReportes = async (req, res) => {
 
   try {
     const query = `
-    select 
-      r.*, 
-      COUNT(*) as reportes, 
-      e.nombre AS evento_nombre,
-      e.id_beneficiado AS id_beneficiado,
-      (select evento_eliminados from beneficiado where id_beneficiado = e.id_beneficiado) as eventos_eliminados
-    from reporte r 
-    inner join evento e on r.id_evento = e.id_evento
-    where estatus = 'pendiente' 
-    group by id_evento
-    order by reportes desc;`;
+    SELECT
+    e.nombre AS evento_nombre,
+    e.id_beneficiado AS id_beneficiado,
+    (SELECT evento_eliminados FROM beneficiado WHERE id_beneficiado = e.id_beneficiado) AS eventos_eliminados,
+    COUNT(r.id_reporte) AS reportes
+    FROM evento e
+    LEFT JOIN reporte r ON r.id_evento = e.id_evento
+    GROUP BY e.id_evento, e.nombre, e.id_beneficiado
+    HAVING COUNT(r.id_reporte) >= 1;`;
 
     const connection = await useConnection();
 
