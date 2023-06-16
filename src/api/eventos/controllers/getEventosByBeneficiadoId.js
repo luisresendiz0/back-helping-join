@@ -4,13 +4,13 @@ export const getEventosByBeneficiadoId = async (req, res) => {
   const response = {
     success: false,
     message: "",
-    data: []
-  }
+    data: [],
+  };
 
   try {
-   const { beneficiadoId } = req.params;
+    const { beneficiadoId } = req.params;
 
-    if(!beneficiadoId) {
+    if (!beneficiadoId) {
       throw new Error("No se recibió el id del beneficiado");
     }
 
@@ -28,10 +28,11 @@ export const getEventosByBeneficiadoId = async (req, res) => {
     response.message = "Eventos obtenidos";
     response.data = rows;
 
+    await connection.end();
     return res.status(200).json(response);
   } catch (error) {
     console.log(error);
     response.message = "Error al obtener los eventos";
     return res.status(500).json(response);
   }
-}
+};

@@ -10,6 +10,7 @@ const main = async () => {
     const connection = await useConnection();
     await connection.query("select 1 + 1;");
     console.log("Database is connected");
+    await connection.end();
   } catch (error) {
     console.error("Error: ", error);
   }

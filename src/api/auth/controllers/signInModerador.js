@@ -32,7 +32,9 @@ const signInModerador = async (req, res) => {
     const user = rows[0];
 
     if (user.contrasena === "Cambiame1") {
-      throw new Error("Es necesario cambiar la contraseña:" + user.id_moderador);
+      throw new Error(
+        "Es necesario cambiar la contraseña:" + user.id_moderador
+      );
     }
 
     const isValidPassword = await bcrypt.compare(contrasena, user.contrasena);
@@ -47,7 +49,6 @@ const signInModerador = async (req, res) => {
 
     user.contrasena = null;
 
-    await connection.end();
     response.success = true;
     response.message = "Usuario autenticado correctamente";
     response.data = {
@@ -55,13 +56,13 @@ const signInModerador = async (req, res) => {
       moderador: user,
     };
 
+    await connection.end();
     return res.status(200).json(response);
-
   } catch (error) {
     console.log(error);
     response.message = error.message;
     return res.status(400).json(response);
   }
-}
+};
 
 export default signInModerador;

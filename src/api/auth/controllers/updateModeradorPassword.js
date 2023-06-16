@@ -18,7 +18,6 @@ const updateModeradorPassword = async (req, res) => {
     const connection = await useConnection();
     const encryptedPassword = await bcrypt.hash(contrasena, 10);
 
-
     const query = `
     update moderador
     set contrasena = '${encryptedPassword}'
@@ -27,20 +26,20 @@ const updateModeradorPassword = async (req, res) => {
     const [result] = await connection.query(query);
 
     if (result.affectedRows === 0) {
+      await connection.end();
       throw new Error("No se pudo actualizar la contraseña");
     }
 
     await connection.end();
     response.success = true;
     response.message = "Contraseña actualizada correctamente";
-    
-    return res.status(200).json(response);
 
+    return res.status(200).json(response);
   } catch (error) {
     console.log(error);
     response.message = error.message;
     return res.status(400).json(response);
   }
-}
+};
 
 export default updateModeradorPassword;

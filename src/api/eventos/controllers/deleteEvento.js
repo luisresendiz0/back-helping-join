@@ -4,13 +4,13 @@ export const deleteEvento = async (req, res) => {
   const response = {
     success: false,
     message: "",
-    data: null
-  }
+    data: null,
+  };
 
   try {
     const { eventoId } = req.body;
 
-    if(!eventoId) {
+    if (!eventoId) {
       throw new Error("No se proporcionó el id del evento");
     }
 
@@ -19,11 +19,12 @@ export const deleteEvento = async (req, res) => {
     const getquery = `
     select id_beneficiado
     from evento
-    where id_evento = ${eventoId};`
+    where id_evento = ${eventoId};`;
 
     const getresult = await connection.query(getquery);
 
-    if(getresult[0].length !== 1) {
+    if (getresult[0].length !== 1) {
+      await connection.end();
       throw new Error("getquery: No se han modificado eventos");
     }
 
@@ -32,11 +33,12 @@ export const deleteEvento = async (req, res) => {
     const addquery = `
     update beneficiado
     set evento_eliminados = evento_eliminados + 1
-    where id_beneficiado = ${beneficiadoId};`
+    where id_beneficiado = ${beneficiadoId};`;
 
     const addresult = await connection.query(addquery);
 
-    if(addresult[0].affectedRows !== 1) {
+    if (addresult[0].affectedRows !== 1) {
+      await connection.end();
       throw new Error("addquery: No se han modificado eventos");
     }
 
@@ -46,7 +48,8 @@ export const deleteEvento = async (req, res) => {
 
     const deletecatsresult = await connection.query(deletecatsquery);
 
-    if(deletecatsresult[0].affectedRows === 0) {
+    if (deletecatsresult[0].affectedRows === 0) {
+      await connection.end();
       throw new Error("deletecatsquery: No se han modificado eventos");
     }
 
@@ -60,10 +63,15 @@ export const deleteEvento = async (req, res) => {
     delete from normalizacion
     where id_evento = ${eventoId};`;
 
-    const deletenormalizacionresult = await connection.query(deletenormalizacionquery);
+    const deletenormalizacionresult = await connection.query(
+      deletenormalizacionquery
+    );
 
-    if(deletenormalizacionresult[0].affectedRows !== 1) {
-      throw new Error("deletenormalizacioneventoquery: No se han modificado eventos");
+    if (deletenormalizacionresult[0].affectedRows !== 1) {
+      await connection.end();
+      throw new Error(
+        "deletenormalizacioneventoquery: No se han modificado eventos"
+      );
     }
 
     const deletereportesquery = `
@@ -72,7 +80,8 @@ export const deleteEvento = async (req, res) => {
 
     const deletereportesresult = await connection.query(deletereportesquery);
 
-    if(deletereportesresult[0].affectedRows === 0) {
+    if (deletereportesresult[0].affectedRows === 0) {
+      await connection.end();
       throw new Error("deletereportesquery: No se han modificado eventos");
     }
 
@@ -82,22 +91,22 @@ export const deleteEvento = async (req, res) => {
 
     const deleteresult = await connection.query(deletequery);
 
-    if(deleteresult[0].affectedRows !== 1) {
+    if (deleteresult[0].affectedRows !== 1) {
+      await connection.end();
       throw new Error("deletequery: No se han modificado eventos");
     }
 
-    await connection.end();
-response.success = true;
+    response.success = true;
     response.message = "Evento eliminado";
     response.data = deleteresult[0];
-    return res.status(200).json(response);
 
+    await connection.end();
+    return res.status(200).json(response);
   } catch (error) {
     console.error(error);
     response.success = false;
     response.message = error.message;
     response.data = null;
     return res.status(500).json(response);
-    
   }
-}
+};

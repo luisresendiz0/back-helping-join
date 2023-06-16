@@ -18,12 +18,13 @@ export const getAllEventos = async (req, res) => {
 
     if (results[0]) {
       await connection.end();
-response.success = true;
+      response.success = true;
       response.message = "Eventos obtenidos con éxito";
       response.data = results[0];
 
       res.status(200).json(response);
     } else {
+      await connection.end();
       res.status(404).json(response);
     }
   } catch (err) {

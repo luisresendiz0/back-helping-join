@@ -56,6 +56,7 @@ const signupBeneficiado = async (req, res) => {
     const result = await connection.query(select);
 
     if (result[0].length > 0) {
+      await connection.end();
       response.message = "El usuario ya existe";
       return res.status(400).json(response);
     }
@@ -101,6 +102,7 @@ const signupBeneficiado = async (req, res) => {
     const usuario = await connection.query(insert);
 
     if (usuario[0].affectedRows === 0) {
+      await connection.end();
       response.message = "Error al registrar el usuario";
       return res.status(500).json(response);
     }
@@ -121,6 +123,7 @@ const signupBeneficiado = async (req, res) => {
     const resultCateagorias = await connection.query(queryCategorias);
 
     if (resultCateagorias[0].affectedRows !== categorias.length) {
+      await connection.end();
       throw new Error("Error al registrar las categorias");
     }
 
@@ -129,13 +132,13 @@ const signupBeneficiado = async (req, res) => {
     const [rows] = await connection.query(getUser);
 
     if (rows.length === 0) {
+      await connection.end();
       throw new Error("No se encontró el usuario");
     }
 
-    await connection.end();
-
     await sendEmail(email, responsable, usuario[0].insertId, "beneficiado");
 
+    await connection.end();
     response.success = true;
     response.message = "Usuario registrado";
     response.data = { token, beneficiado: rows[0] };

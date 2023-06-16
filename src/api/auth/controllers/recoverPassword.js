@@ -26,6 +26,7 @@ const recoverPassword = async (req, res) => {
     const result = await connection.query(find);
 
     if (result[0].length === 0) {
+      await connection.end();
       throw new Error("No existe usuario");
     }
 
@@ -35,6 +36,7 @@ const recoverPassword = async (req, res) => {
 
     await sendEmailPin(email, nombre, pin);
 
+    await connection.end();
     response.success = true;
     response.message =
       "Se ha enviado un correo electrónico con el PIN de recuperación";

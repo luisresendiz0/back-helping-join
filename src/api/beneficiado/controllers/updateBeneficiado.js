@@ -36,6 +36,7 @@ const updateBeneficiado = async (req, res) => {
     const findResult = await connection.query(find);
 
     if (findResult[0].length === 0) {
+      await connection.end();
       throw new Error("No existe beneficiado");
     }
 
@@ -92,6 +93,7 @@ const updateBeneficiado = async (req, res) => {
     const result = await connection.query(update);
 
     if (result[0].affectedRows !== 1) {
+      await connection.end();
       response.message = "No se pudo actualizar el beneficiado";
       return res.status(400).json(response);
     }
@@ -103,6 +105,8 @@ const updateBeneficiado = async (req, res) => {
     response.success = true;
     response.message = "Beneficiado actualizado";
     response.data = data[0][0];
+
+    await connection.end();
     res.status(200).json(response);
   } catch (error) {
     console.log(error);

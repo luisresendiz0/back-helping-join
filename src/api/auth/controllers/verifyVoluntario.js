@@ -23,6 +23,7 @@ const verifyVoluntario = async (req, res) => {
     response.success = true;
     response.message = "Usuario verificado";
 
+    await connection.end();
     return res.status(200).send(template);
   } catch (error) {
     response.message = error.message;

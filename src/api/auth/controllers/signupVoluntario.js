@@ -50,6 +50,7 @@ const signupVoluntario = async (req, res) => {
     const result = await connection.query(select);
 
     if (result[0].length > 0) {
+      await connection.end();
       response.message = "El usuario ya existe";
       return res.status(400).json(response);
     }
@@ -88,6 +89,7 @@ const signupVoluntario = async (req, res) => {
     const usuario = await connection.query(insert);
 
     if (usuario[0].affectedRows !== 1) {
+      await connection.end();
       response.message = "Error al registrar el usuario";
       return res.status(500).json(response);
     }
@@ -104,6 +106,7 @@ const signupVoluntario = async (req, res) => {
     const resultCateagorias = await connection.query(queryCategorias);
 
     if (resultCateagorias[0].affectedRows !== categorias.length) {
+      await connection.end();
       response.message = "Error al registrar las categorías";
       return res.status(500).json(response);
     }
@@ -156,6 +159,7 @@ const signupVoluntario = async (req, res) => {
     const resultNormalizacion = await connection.query(insertNormalizacion);
 
     if (resultNormalizacion[0].affectedRows !== 1) {
+      await connection.end();
       throw new Error("No se pudo insertar la normalizacion");
     }
 
@@ -167,14 +171,14 @@ const signupVoluntario = async (req, res) => {
     const [user] = await connection.query(getUser);
 
     if (user.length !== 1) {
+      await connection.end();
       response.message = "Error al registrar el usuario";
       return res.status(500).json(response);
     }
 
-    await connection.end();
-
     await sendEmail(email, nombre, usuario[0].insertId, "voluntario");
 
+    await connection.end();
     response.success = true;
     response.message = "Usuario registrado";
     response.data = { token, voluntario: user[0] };

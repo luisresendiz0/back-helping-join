@@ -6,7 +6,7 @@ const updatePassword = async (req, res) => {
     success: false,
     message: "",
     data: null,
-  }
+  };
 
   const { beneficiadoId, password, newPassword } = req.body;
 
@@ -22,6 +22,7 @@ const updatePassword = async (req, res) => {
     const selectResult = await connection.query(select);
 
     if (selectResult[0].length === 0) {
+      await connection.end();
       throw new Error("El usuario no existe");
     }
 
@@ -30,6 +31,7 @@ const updatePassword = async (req, res) => {
     const match = await bcrypt.compare(password, user.contrasena);
 
     if (!match) {
+      await connection.end();
       throw new Error("Contraseña incorrecta");
     }
 
@@ -39,18 +41,16 @@ const updatePassword = async (req, res) => {
 
     await connection.query(update);
 
-    await connection.end();
-
     response.success = true;
     response.message = "Contraseña actualizada correctamente";
 
+    await connection.end();
     return res.status(200).json(response);
   } catch (error) {
     console.log(error);
     response.message = error.message;
     return res.status(500).json(response);
   }
-    
-}
+};
 
 export default updatePassword;

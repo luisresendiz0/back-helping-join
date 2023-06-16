@@ -57,6 +57,7 @@ const updatePerfil = async (req, res) => {
     const result = await connection.query(update);
 
     if (result[0].affectedRows !== 1) {
+      await connection.end();
       throw new Error("No se pudo actualizar el voluntario");
     }
 
@@ -68,6 +69,7 @@ const updatePerfil = async (req, res) => {
     response.message = "Voluntario actualizado";
     response.data = data[0][0];
 
+    await connection.end();
     return res.status(200).json(response);
   } catch (error) {
     console.log(error);

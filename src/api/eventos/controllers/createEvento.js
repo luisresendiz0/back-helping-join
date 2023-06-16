@@ -9,38 +9,41 @@ export const createEvento = async (req, res) => {
 
   const {
     id_beneficiado,
-    nombre, 
-    descripcion, 
-    fecha_inicio, 
-    fecha_fin, 
-    calle, 
-    numero_exterior, 
-    numero_interior, 
-    colonia, alcaldia, 
-    codigo_postal, 
-    entidad, 
+    nombre,
+    descripcion,
+    fecha_inicio,
+    fecha_fin,
+    calle,
+    numero_exterior,
+    numero_interior,
+    colonia,
+    alcaldia,
+    codigo_postal,
+    entidad,
     imagen,
-    categorias } = req.body;
+    categorias,
+  } = req.body;
 
-    console.log(req.body);
+  console.log(req.body);
 
-  if(
+  if (
     !id_beneficiado ||
-    !nombre || 
-    !descripcion || 
-    !fecha_inicio || 
-    !fecha_fin || 
+    !nombre ||
+    !descripcion ||
+    !fecha_inicio ||
+    !fecha_fin ||
     !calle ||
-    !numero_exterior || 
-    !colonia || 
-    !alcaldia || 
-    !codigo_postal || 
-    !entidad || 
+    !numero_exterior ||
+    !colonia ||
+    !alcaldia ||
+    !codigo_postal ||
+    !entidad ||
     !imagen ||
-    !categorias) {
-      response.success = false;
-      response.message = "Falta informacion";
-      return res.status(400).json(response);
+    !categorias
+  ) {
+    response.success = false;
+    response.message = "Falta informacion";
+    return res.status(400).json(response);
   }
 
   const query = `
@@ -67,56 +70,58 @@ export const createEvento = async (req, res) => {
     '${fecha_fin}', 
     '${calle}', 
     '${numero_exterior}', 
-    '${numero_interior ?? 'NULL'}',  
+    '${numero_interior ?? "NULL"}',  
     '${colonia}', 
     '${alcaldia}', 
     '${codigo_postal}', 
     '${entidad}', 
-    '${imagen ?? 'NULL'}');`;
+    '${imagen ?? "NULL"}');`;
 
-    try {
-      const connection = await useConnection();
+  try {
+    const connection = await useConnection();
 
-      const result = await connection.query(query);
+    const result = await connection.query(query);
 
-      if(result[0].affectedRows !== 1) {
-        throw new Error("No se pudo crear el evento");
-      }
+    if (result[0].affectedRows !== 1) {
+      await connection.end();
+      throw new Error("No se pudo crear el evento");
+    }
 
-      const eventoId = result[0].insertId;
+    const eventoId = result[0].insertId;
 
-      let categoriasQuery = `
+    let categoriasQuery = `
       INSERT INTO evento_categoria (
         id_evento,
         id_categoria
       )
       VALUES`;
-    
-      categorias.forEach((categoria) => {
-        categoriasQuery += `(${eventoId}, '${categoria}'),`;
-      });
 
-      categoriasQuery = categoriasQuery.slice(0, -1) + ";";
+    categorias.forEach((categoria) => {
+      categoriasQuery += `(${eventoId}, '${categoria}'),`;
+    });
 
-      const categoriasResult = await connection.query(categoriasQuery);
+    categoriasQuery = categoriasQuery.slice(0, -1) + ";";
 
-      if(categoriasResult[0].affectedRows !== categorias.length) {
-        throw new Error("No se pudo crear las categorias");
-      }
+    const categoriasResult = await connection.query(categoriasQuery);
 
-      const array1 = Array(18).fill(0);
-      const array2 = Array(18).fill(1);
+    if (categoriasResult[0].affectedRows !== categorias.length) {
+      await connection.end();
+      throw new Error("No se pudo crear las categorias");
+    }
 
-      categorias.forEach((categoria) => {
-        array1[categoria - 1] = 1;
-        array2[categoria - 1] = 0;
-      });
+    const array1 = Array(18).fill(0);
+    const array2 = Array(18).fill(1);
 
-      let matriz = [array2, array1];
-      
-      matriz = matriz.map(row => row.map(col => (col + 1)/3));
+    categorias.forEach((categoria) => {
+      array1[categoria - 1] = 1;
+      array2[categoria - 1] = 0;
+    });
 
-      const normalizacionQuery = `
+    let matriz = [array2, array1];
+
+    matriz = matriz.map((row) => row.map((col) => (col + 1) / 3));
+
+    const normalizacionQuery = `
       INSERT INTO normalizacion (
         id_evento,
         matriz
@@ -126,22 +131,23 @@ export const createEvento = async (req, res) => {
         '${JSON.stringify(matriz)}'
       )`;
 
-      const resultNormalizacion = await connection.query(normalizacionQuery);
+    const resultNormalizacion = await connection.query(normalizacionQuery);
 
-      if(resultNormalizacion[0].affectedRows !== 1) {
-        throw new Error("No se pudo crear las normalizaciones");
-      }
-
+    if (resultNormalizacion[0].affectedRows !== 1) {
       await connection.end();
-      response.success = true;
-      response.message = "Evento creado";
-      response.data = eventoId;
-      res.status(200).json(response);
-
-    } catch (error) {
-      console.error(error);
-      response.success = false;
-      response.message = error.message;
-      res.status(400).json(response)
+      throw new Error("No se pudo crear las normalizaciones");
     }
-}
+
+    response.success = true;
+    response.message = "Evento creado";
+    response.data = eventoId;
+
+    await connection.end();
+    res.status(200).json(response);
+  } catch (error) {
+    console.error(error);
+    response.success = false;
+    response.message = error.message;
+    res.status(400).json(response);
+  }
+};

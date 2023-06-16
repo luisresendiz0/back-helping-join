@@ -40,14 +40,15 @@ const getRecomendations = async (req, res) => {
     const unsortedEventos = resultRecomendaciones[0];
 
     const sortedEventos = recomendations.map((r) => {
-      const evento = unsortedEventos.find((e) => e.id_evento === r.id_evento)
-      return {...evento, probabilidad: r.total}
+      const evento = unsortedEventos.find((e) => e.id_evento === r.id_evento);
+      return { ...evento, probabilidad: r.total };
     });
 
-    await connection.end();
     response.success = true;
     response.message = "Recomendaciones generadas";
     response.data = sortedEventos;
+
+    await connection.end();
     res.status(200).json(response);
   } catch (error) {
     console.log(error);

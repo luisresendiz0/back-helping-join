@@ -4,8 +4,8 @@ export const getReportes = async (req, res) => {
   const response = {
     success: false,
     message: "No se pudo obtener los reportes",
-    data: []
-  }
+    data: [],
+  };
 
   try {
     const query = `
@@ -24,10 +24,11 @@ export const getReportes = async (req, res) => {
 
     const result = await connection.query(query);
 
-    await connection.end();
     response.success = true;
     response.message = "Reportes obtenidos";
     response.data = result[0];
+
+    await connection.end();
     return res.status(200).json(response);
   } catch (error) {
     console.error(error);
@@ -36,4 +37,4 @@ export const getReportes = async (req, res) => {
     response.data = [];
     return res.status(500).json(response);
   }
-}
+};

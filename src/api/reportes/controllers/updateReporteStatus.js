@@ -4,13 +4,13 @@ export const updateReporteStatus = async (req, res) => {
   const response = {
     success: false,
     message: "",
-    data: null
-  }
+    data: null,
+  };
 
   try {
     const { eventoId } = req.body;
 
-    if(!eventoId) {
+    if (!eventoId) {
       throw new Error("No se proporcionó el id del evento");
     }
 
@@ -23,22 +23,22 @@ export const updateReporteStatus = async (req, res) => {
 
     const result = await connection.query(query);
 
-    if(result[0].length === 0) {
+    if (result[0].length === 0) {
+      await connection.end();
       throw new Error("No se han modificado reportes");
     }
 
-    await connection.end();
-response.success = true;
+    response.success = true;
     response.message = "Reportes modificados";
     response.data = result[0];
-    return res.status(200).json(response);
 
+    await connection.end();
+    return res.status(200).json(response);
   } catch (error) {
     console.error(error);
     response.success = false;
     response.message = error.message;
     response.data = null;
     return res.status(500).json(response);
-    
   }
-}
+};

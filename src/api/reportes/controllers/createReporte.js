@@ -34,13 +34,15 @@ export const createReporte = async (req, res) => {
     const result = await connection.query(query);
 
     if (result[0].affectedRows !== 1) {
+      await connection.end();
       throw new Error("No se pudo crear el reporte");
     }
 
-    await connection.end();
     response.success = true;
     response.message = "Reporte creado";
     response.data = null;
+
+    await connection.end();
     return res.status(200).json(response);
   } catch (error) {
     console.error(error);

@@ -37,20 +37,22 @@ const signinVoluntario = async (req, res, next) => {
 
         usuario.contrasena = null;
 
-        await connection.end();
-response.success = true;
+        response.success = true;
         response.message = "Usuario autenticado correctamente";
         response.data = {
           token,
           usuario,
         };
 
+        await connection.end();
         return res.status(200).json(response);
       } else {
         response.message = "Contraseña incorrecta";
+        await connection.end();
         return res.status(400).json(response);
       }
     } else {
+      await connection.end();
       response.message = "El usuario no existe";
       return res.status(400).json(response);
     }

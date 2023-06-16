@@ -13,9 +13,8 @@ export const search = async (req, res) => {
     text, // texto a buscar
     type, // 'eventos', 'organizaciones', 'civiles'
   } = req.body;
-  console.log(text)
+  console.log(text);
   try {
-
     const eventosQuery = `
       SELECT e.*, GROUP_CONCAT(c.nombre SEPARATOR ', ') AS categorias
       FROM evento e
@@ -61,33 +60,34 @@ export const search = async (req, res) => {
 
     const connection = await useConnection();
 
-    let eventos = []
-    let organizaciones = []
-    let civiles = []
+    let eventos = [];
+    let organizaciones = [];
+    let civiles = [];
 
-    if(type.includes("eventos") || type.includes("all")) {
+    if (type.includes("eventos") || type.includes("all")) {
       const eventosResult = await connection.query(eventosQuery);
       eventos = eventosResult[0];
     }
 
-    if(type.includes("organizaciones") || type.includes("all")) {
+    if (type.includes("organizaciones") || type.includes("all")) {
       const organizacionesResult = await connection.query(organizacionesQuery);
       organizaciones = organizacionesResult[0];
     }
 
-    if(type.includes("civiles") || type.includes("all")) {
+    if (type.includes("civiles") || type.includes("all")) {
       const civilesResult = await connection.query(civilesQuery);
       civiles = civilesResult[0];
     }
 
-    await connection.end();
     response.success = true;
     response.message = "Busqueda exitosa";
     response.data = {
       eventos,
       organizaciones,
-      civiles
+      civiles,
     };
+
+    await connection.end();
     return res.status(200).json(response);
   } catch (error) {
     console.error(error);

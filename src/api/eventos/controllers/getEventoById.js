@@ -4,12 +4,12 @@ export const getEventoById = async (req, res) => {
   const response = {
     success: false,
     message: "No se pudo obtener el evento",
-    data: null
-  }
+    data: null,
+  };
   try {
     const { voluntarioId, eventoId } = req.query;
 
-    if(!eventoId || !voluntarioId) {
+    if (!eventoId || !voluntarioId) {
       throw new Error("No se recibieron los datos necesarios");
     }
 
@@ -26,15 +26,16 @@ export const getEventoById = async (req, res) => {
 
     const result = await connection.query(query);
 
-    if(result[0].length === 0) {
+    if (result[0].length === 0) {
+      await connection.end();
       throw new Error("No se encontró el evento");
     }
 
-    await connection.end();
-response.success = true;
+    response.success = true;
     response.message = "Evento obtenido";
     response.data = result[0][0];
 
+    await connection.end();
     res.status(200).json(response);
   } catch (error) {
     console.log(error);
@@ -43,4 +44,4 @@ response.success = true;
     response.data = null;
     res.status(500).json(response);
   }
-}
+};

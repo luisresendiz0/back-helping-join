@@ -1,17 +1,16 @@
 import useConnection from "../../../database";
 
-
 export const deleteBeneficiado = async (req, res) => {
   const result = {
     success: false,
-    message: '',
-    data: null
-  }
+    message: "",
+    data: null,
+  };
 
   try {
     const { beneficiadoId } = req.params;
 
-    if(!beneficiadoId) {
+    if (!beneficiadoId) {
       throw new Error("No se recibió el id del beneficiado");
     }
 
@@ -55,28 +54,38 @@ export const deleteBeneficiado = async (req, res) => {
     delete bc from beneficiado_categoria bc
     where bc.id_beneficiado = ${beneficiadoId};`;
 
-    const deleteBeneficiadoCatsResult = await connection.query(deleteBeneficiadoCatsQuery);
+    const deleteBeneficiadoCatsResult = await connection.query(
+      deleteBeneficiadoCatsQuery
+    );
 
-    if(deleteBeneficiadoCatsResult[0].affectedRows === 0) {
+    if (deleteBeneficiadoCatsResult[0].affectedRows === 0) {
       console.log(deleteBeneficiadoCatsResult[0]);
-      throw new Error("deleteBeneficiadoCatQuery: No se pudo eleminar el beneficiado");
+      await connection.end();
+      throw new Error(
+        "deleteBeneficiadoCatQuery: No se pudo eleminar el beneficiado"
+      );
     }
 
     const deleteBeneficiadoQuery = `
     delete from beneficiado
     where id_beneficiado = ${beneficiadoId};`;
 
-    const deleteBeneficiadoResult = await connection.query(deleteBeneficiadoQuery);
+    const deleteBeneficiadoResult = await connection.query(
+      deleteBeneficiadoQuery
+    );
 
-    if(deleteBeneficiadoResult[0].affectedRows === 0) {
-      throw new Error("deleteBeneficiadoQuery: No se pudo eleminar el beneficiado");
+    if (deleteBeneficiadoResult[0].affectedRows === 0) {
+      await connection.end();
+      throw new Error(
+        "deleteBeneficiadoQuery: No se pudo eleminar el beneficiado"
+      );
     }
 
+    await connection.end();
     result.success = true;
     result.message = "Beneficiado eliminado";
     result.data = null;
     return res.status(200).json(result);
-
   } catch (error) {
     console.error(error);
     result.success = false;
@@ -84,6 +93,6 @@ export const deleteBeneficiado = async (req, res) => {
     result.data = null;
     return res.status(500).json(result);
   }
-}
+};
 
 export default deleteBeneficiado;
