@@ -24,9 +24,19 @@ export const getReportes = async (req, res) => {
 
     const result = await connection.query(query);
 
+    const eventos = result[0];
+    const valid = []
+    for(let evento of eventos) {
+      const reportesQuery = `select count(r.id_reporte) as reportes_validos from reporte r where r.id_evento = ${evento.id_evento} and r.estatus != 'verificado';`;
+      const reportesQueryResult = await connection.query(reportesQuery);
+      if(reportesQueryResult[0][0].reportes_validos > 0) {
+        valid.push(evento);
+      }
+    }
+
     response.success = true;
     response.message = "Reportes obtenidos";
-    response.data = result[0];
+    response.data = valid;
 
     await connection.end();
     return res.status(200).json(response);
